@@ -1,4 +1,4 @@
 Devboard
 ===================
 
-Allows Pebble devlopers to view their project's status directly from their Pebble smartwatch!
+Allows Pebble devlopers to view their projects directly from their Pebble smartwatch!
