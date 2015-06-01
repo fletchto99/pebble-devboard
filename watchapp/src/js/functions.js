@@ -47,7 +47,7 @@ functions.setup = function () {
                     });
 
                     menu.on('select', function (event) {
-                        functions.showCard(menuItems[event.itemIndex].title, menuItems[event.itemIndex].subtitle,'Last Updated: ' + menuItems[event.itemIndex].update_date + '\nInstalls: ' + menuItems[event.itemIndex].installs + '\nHearts: ' + menuItems[event.itemIndex].hearts + '\nAplite: ' + menuItems[event.itemIndex].aplite + '\nBasalt: ' + menuItems[event.itemIndex].basalt + '\nTimeline' + menuItems[event.itemIndex].timeline);
+                        functions.showCard(menuItems[event.itemIndex].title, menuItems[event.itemIndex].subtitle,'Last Updated:\n' + menuItems[event.itemIndex].update_date + '\nInstalls: ' + menuItems[event.itemIndex].installs + '\nHearts: ' + menuItems[event.itemIndex].hearts + '\nAplite: ' + menuItems[event.itemIndex].aplite + '\nBasalt: ' + menuItems[event.itemIndex].basalt + '\nTimeline: ' + menuItems[event.itemIndex].timeline);
                     });
                     menu.show();
                 } else {
