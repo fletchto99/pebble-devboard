@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head lang="en">
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+        <title>Dev Dashboard Login</title>
+
+        <link rel="stylesheet" href="resources/vendor/bootstrap/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="resources/vendor/bootstrap/css/bootstrap-theme.min.css"/>
+        <link rel="stylesheet" href="resources/style/custom.css"/>
+
+        <script src="resources/vendor/jquery/jquery.min.js"></script>
+        <script src="resources/vendor/bootstrap/js/bootstrap.min.js"></script>
+        <script src="resources/js/settings.js"></script>
+
+    </head>
+    <body>
+        <div class="container">
+            <section id="header">
+                <div class="row">
+                    <div class="col-xs-12 text-center">
+                        <h1>Dev Dashboard Login</h1>
+                    </div>
+                </div>
+            </section>
+            <section id="options">
+                <div class="form-group">
+                    <label for="username" class="form-label">Pebble Dev Username:</label>
+                    <input type="text" class="form-control" id="username">
+                </div>
+                <div class="form-group">
+                    <label for="password" class="form-label">Pebble Dev Password:</label>
+                    <input type="password" class="form-control" id="password">
+                </div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <button type="submit" id="cancel" class="btn btn-primary btn-block">Cancel</button>
+                    </div>
+                    <div class="col-xs-6">
+                        <button type="submit" id="save" class="btn btn-success btn-block">Login</button>
+                    </div>
+
+                </div>
+            </section>
+            <section id="progress">
+                <h2>
+                    Saving....
+                </h2>
+
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped active" style="width: 100%"></div>
+                </div>
+            </section>
+        </div>
+    </body>
+</html>

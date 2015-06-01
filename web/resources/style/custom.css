@@ -1,0 +1,12 @@
+body {
+    background: url("../images/background.jpg") fixed repeat left top ;
+}
+
+h1, h2 {
+    color: #FFFFFF;
+}
+
+.form-label {
+    color: #FFFFFF;
+    font-size: 15pt;
+}
