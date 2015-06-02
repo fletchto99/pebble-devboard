@@ -22,7 +22,7 @@ class Projects
                 $icons = strtolower(Functions::elementToText(Functions::findElement($proj,'.application-icons' , 0)));
                 $project['aplite'] = (strpos($icons, 'aplite') !== false) ? 'true' : 'false';
                 $project['basalt'] = (strpos($icons, 'basalt') !== false) ? 'true' : 'false';
-                $project['timeline'] = (strpos($icons, 'timeline') !== false) ? 'true' : 'false';
+                $project['timeline'] = (strpos($icons, 'timeline') !== false) ? 'Enabled' : 'Disabled';
                 $stats = Functions::findElement($proj,'.application-stats' , 0);
                 $project['hearts'] = intval(Functions::elementToPlaintext(Functions::findElement($stats,'p' , 0)));
                 $project['installs'] = intval(Functions::elementToPlaintext(Functions::findElement($stats,'p' , 1)));
