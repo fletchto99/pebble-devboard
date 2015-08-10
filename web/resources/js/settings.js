@@ -18,6 +18,7 @@ $(function () {
     var donatebutton = document.getElementById('donatebutton');
 
     donatebutton.addEventListener('click', function () {
+        savebutton.value = 'Loading PayPal...';
         savebutton.disabled = true;
         donatebutton.value = 'Thank You!';
         donatebutton.disabled = true;
