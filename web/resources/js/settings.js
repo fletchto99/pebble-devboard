@@ -15,6 +15,11 @@ $(function () {
     var username = document.getElementById('username');
     var password = document.getElementById('password');
     var savebutton = document.getElementById('savebutton');
+    var donatebutton = document.getElementById('donatebutton');
+
+    donatebutton.addEventListener('click', function () {
+        document.location = 'https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=3PXVE99RCWGRQ&lc=CA&item_name=Devboard%20for%20Pebble%20by%20Matt%20Langlois&currency_code=CAD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted&return=fletchto99.com/other/pebble/metup/settings.html';
+    });
 
     savebutton.addEventListener('click', function() {
 
