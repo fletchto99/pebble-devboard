@@ -35,6 +35,9 @@ functions.setup = function () {
                             update_date: data[i].update_date,
                             aplite: data[i].aplite,
                             basalt: data[i].basalt,
+                            chalk: data[i].chalk,
+                            ios: data[i].ios,
+                            android: data[i].android,
                             timeline: data[i].timeline,
                             hearts: data[i].hearts,
                             installs: data[i].installs
@@ -47,7 +50,7 @@ functions.setup = function () {
                     });
 
                     menu.on('select', function (event) {
-                        functions.showCard(menuItems[event.itemIndex].title, menuItems[event.itemIndex].subtitle,'Installs: ' + menuItems[event.itemIndex].installs + '\nHearts: ' + menuItems[event.itemIndex].hearts + '\nLast Updated:\n' + menuItems[event.itemIndex].update_date + '\nAplite: ' + menuItems[event.itemIndex].aplite + '\nBasalt: ' + menuItems[event.itemIndex].basalt + '\nTimeline: ' + menuItems[event.itemIndex].timeline);
+                        functions.showCard(menuItems[event.itemIndex].title, menuItems[event.itemIndex].subtitle,'Installs: ' + menuItems[event.itemIndex].installs + '\nHearts: ' + menuItems[event.itemIndex].hearts + '\nLast Updated:\n' + menuItems[event.itemIndex].update_date + '\nAplite: ' + menuItems[event.itemIndex].aplite + '\nBasalt: ' + menuItems[event.itemIndex].basalt + '\nChalk: ' + menuItems[event.itemIndex].chalk + '\nAndroid: ' + menuItems[event.itemIndex].android + '\niOS: ' + menuItems[event.itemIndex].ios + '\nTimeline: ' + menuItems[event.itemIndex].timeline);
                     });
                     menu.show();
                 } else {
