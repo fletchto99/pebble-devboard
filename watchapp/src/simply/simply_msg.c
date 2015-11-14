@@ -1,6 +1,7 @@
 #include "simply_msg.h"
 
 #include "simply_accel.h"
+#include "simply_voice.h"
 #include "simply_res.h"
 #include "simply_stage.h"
 #include "simply_menu.h"
@@ -22,7 +23,7 @@
 
 static const size_t APP_MSG_SIZE_INBOUND = 2044;
 
-static const size_t APP_MSG_SIZE_OUTBOUND = 512;
+static const size_t APP_MSG_SIZE_OUTBOUND = 1024;
 
 typedef enum VibeType VibeType;
 
@@ -55,6 +56,7 @@ struct __attribute__((__packed__)) ImagePacket {
   uint32_t id;
   int16_t width;
   int16_t height;
+  uint16_t pixels_length;
   uint8_t pixels[];
 };
 
@@ -153,7 +155,8 @@ static void handle_segment_packet(Simply *simply, Packet *data) {
 
 static void handle_image_packet(Simply *simply, Packet *data) {
   ImagePacket *packet = (ImagePacket*) data;
-  simply_res_add_image(simply->res, packet->id, packet->width, packet->height, packet->pixels);
+  simply_res_add_image(simply->res, packet->id, packet->width, packet->height, packet->pixels,
+                       packet->pixels_length);
 }
 
 static void handle_vibe_packet(Simply *simply, Packet *data) {
@@ -199,6 +202,7 @@ static void handle_packet(Simply *simply, Packet *packet) {
   if (simply_window_handle_packet(simply, packet)) { return; }
   if (simply_ui_handle_packet(simply, packet)) { return; }
   if (simply_accel_handle_packet(simply, packet)) { return; }
+  if (simply_voice_handle_packet(simply, packet)) { return; }
   if (simply_menu_handle_packet(simply, packet)) { return; }
   if (simply_stage_handle_packet(simply, packet)) { return; }
 }
@@ -255,8 +259,8 @@ void simply_msg_show_disconnected(SimplyMsg *self) {
   SimplyUi *ui = simply->ui;
 
   simply_ui_clear(ui, ~0);
-  simply_ui_set_text(ui, UiSubtitle, "Phone Disconnected");
-  simply_ui_set_text(ui, UiBody, "Devboard requires a phone connection to properly load. Please connect to your phone and run the Pebble app.");
+  simply_ui_set_text(ui, UiSubtitle, "Disconnected");
+  simply_ui_set_text(ui, UiBody, "Run the Pebble Phone App");
 
   if (window_stack_get_top_window() != ui->window.window) {
     bool was_broadcast = simply_window_stack_set_broadcast(false);

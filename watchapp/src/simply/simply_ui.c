@@ -27,18 +27,25 @@ enum ClearIndex {
   ClearImage,
 };
 
+enum SimplyStyleId {
+  SimplyStyleId_Small = 0,
+  SimplyStyleId_Large,
+  SimplyStyleId_Mono,
+  SimplyStyleId_Default = SimplyStyleId_Large,
+};
+
 static SimplyStyle STYLES[] = {
-  {
+  [SimplyStyleId_Small] = {
     .title_font = FONT_KEY_GOTHIC_24_BOLD,
     .subtitle_font = FONT_KEY_GOTHIC_18_BOLD,
     .body_font = FONT_KEY_GOTHIC_18,
   },
-  {
+  [SimplyStyleId_Large] = {
     .title_font = FONT_KEY_GOTHIC_28_BOLD,
     .subtitle_font = FONT_KEY_GOTHIC_28,
     .body_font = FONT_KEY_GOTHIC_24_BOLD,
   },
-  {
+  [SimplyStyleId_Mono] = {
     .title_font = FONT_KEY_GOTHIC_24_BOLD,
     .subtitle_font = FONT_KEY_GOTHIC_18_BOLD,
     .custom_body_font_id = RESOURCE_ID_MONO_FONT_14,
@@ -76,11 +83,18 @@ struct __attribute__((__packed__)) CardStylePacket {
   uint8_t style;
 };
 
+static void mark_dirty(SimplyUi *self) {
+  if (self->ui_layer.layer) {
+    layer_mark_dirty(self->ui_layer.layer);
+  }
+}
+
 void simply_ui_clear(SimplyUi *self, uint32_t clear_mask) {
   if (clear_mask & (1 << ClearAction)) {
     simply_window_action_bar_clear(&self->window);
   }
   if (clear_mask & (1 << ClearText)) {
+    simply_ui_set_style(self, SimplyStyleId_Default);
     for (int textfield_id = 0; textfield_id < NumUiTextfields; ++textfield_id) {
       simply_ui_set_text(self, textfield_id, NULL);
       simply_ui_set_text_color(self, textfield_id, GColor8Black);
@@ -101,24 +115,20 @@ void simply_ui_set_style(SimplyUi *self, int style_index) {
     self->ui_layer.custom_body_font = fonts_load_custom_font(
         resource_get_handle(self->ui_layer.style->custom_body_font_id));
   }
-  layer_mark_dirty(self->ui_layer.layer);
+  mark_dirty(self);
 }
 
 void simply_ui_set_text(SimplyUi *self, SimplyUiTextfieldId textfield_id, const char *str) {
   SimplyUiTextfield *textfield = &self->ui_layer.textfields[textfield_id];
   char **str_field = &textfield->text;
   strset(str_field, str);
-  if (self->ui_layer.layer) {
-    layer_mark_dirty(self->ui_layer.layer);
-  }
+  mark_dirty(self);
 }
 
 void simply_ui_set_text_color(SimplyUi *self, SimplyUiTextfieldId textfield_id, GColor8 color) {
   SimplyUiTextfield *textfield = &self->ui_layer.textfields[textfield_id];
   textfield->color = color;
-  if (self->ui_layer.layer) {
-    layer_mark_dirty(self->ui_layer.layer);
-  }
+  mark_dirty(self);
 }
 
 static void layer_update_callback(Layer *layer, GContext *ctx) {
@@ -202,7 +212,7 @@ static void layer_update_callback(Layer *layer, GContext *ctx) {
       subtitle_frame.size.w -= subtitle_icon_bounds.size.w;
     }
     subtitle_size = graphics_text_layout_get_content_size(subtitle->text,
-        title_font, subtitle_frame, GTextOverflowModeWordWrap, GTextAlignmentLeft);
+        subtitle_font, subtitle_frame, GTextOverflowModeWordWrap, GTextAlignmentLeft);
     subtitle_size.w = subtitle_frame.size.w;
     subtitle_pos = cursor;
     if (subtitle_icon) {
@@ -308,7 +318,6 @@ static void window_load(Window *window) {
   *(void**) layer_get_data(layer) = self;
   layer_set_update_proc(layer, layer_update_callback);
   scroll_layer_add_child(self->window.scroll_layer, layer);
-  scroll_layer_set_click_config_onto_window(self->window.scroll_layer, window);
 
   simply_ui_set_style(self, 1);
 }
@@ -346,7 +355,9 @@ static void handle_card_text_packet(Simply *simply, Packet *data) {
     return;
   }
   simply_ui_set_text(simply->ui, textfield_id, packet->text);
-  simply_ui_set_text_color(simply->ui, textfield_id, packet->color);
+  if (!gcolor8_equal(packet->color, GColor8ClearWhite)) {
+    simply_ui_set_text_color(simply->ui, textfield_id, packet->color);
+  }
 }
 
 static void handle_card_image_packet(Simply *simply, Packet *data) {
@@ -386,16 +397,16 @@ SimplyUi *simply_ui_create(Simply *simply) {
   SimplyUi *self = malloc(sizeof(*self));
   *self = (SimplyUi) { .window.layer = NULL };
 
-  simply_window_init(&self->window, simply);
-  simply_window_set_background_color(&self->window, GColor8White);
-
-  window_set_user_data(self->window.window, self);
-  window_set_window_handlers(self->window.window, (WindowHandlers) {
+  static const WindowHandlers s_window_handlers = {
     .load = window_load,
     .appear = window_appear,
     .disappear = window_disappear,
     .unload = window_unload,
-  });
+  };
+  self->window.window_handlers = &s_window_handlers;
+
+  simply_window_init(&self->window, simply);
+  simply_window_set_background_color(&self->window, GColor8White);
 
   app_timer_register(10000, (AppTimerCallback) show_welcome_text, self);
 

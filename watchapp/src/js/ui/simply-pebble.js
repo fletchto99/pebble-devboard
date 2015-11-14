@@ -5,6 +5,7 @@ var Wakeup = require('wakeup');
 var Timeline = require('timeline');
 var Resource = require('ui/resource');
 var Accel = require('ui/accel');
+var Voice = require('ui/voice');
 var ImageService = require('ui/imageservice');
 var WindowStack = require('ui/windowstack');
 var Window = require('ui/window');
@@ -70,76 +71,181 @@ var SizeType = function(x) {
   this.sizeH(x.y);
 };
 
-var colorMap = {
-    'clear': 0x00,
-    'black': 0xC0,
-    'oxfordBlue': 0xC1,
-    'dukeBlue': 0xC2,
-    'blue': 0xC3,
-    'darkGreen': 0xC4,
-    'midnightGreen': 0xC5,
-    'cobaltBlue': 0xC6,
-    'blueMoon': 0xC7,
-    'islamicGreen': 0xC8,
-    'jaegerGreen': 0xC9,
-    'tiffanyBlue': 0xCA,
-    'vividCerulean': 0xCB,
-    'green': 0xCC,
-    'malachite': 0xCD,
-    'mediumSpringGreen': 0xCE,
-    'cyan': 0xCF,
-    'bulgarianRose': 0xD0,
-    'imperialPurple': 0xD1,
-    'indigo': 0xD2,
-    'electricUltramarine': 0xD3,
-    'armyGreen': 0xD4,
-    'darkGray': 0xD5,
-    'liberty': 0xD6,
-    'veryLightBlue': 0xD7,
-    'kellyGreen': 0xD8,
-    'mayGreen': 0xD9,
-    'cadetBlue': 0xDA,
-    'pictonBlue': 0xDB,
-    'brightGreen': 0xDC,
-    'screaminGreen': 0xDD,
-    'mediumAquamarine': 0xDE,
-    'electricBlue': 0xDF,
-    'darkCandyAppleRed': 0xE0,
-    'jazzberryJam': 0xE1,
-    'purple': 0xE2,
-    'vividViolet': 0xE3,
-    'windsorTan': 0xE4,
-    'roseVale': 0xE5,
-    'purpureus': 0xE6,
-    'lavenderIndigo': 0xE7,
-    'limerick': 0xE8,
-    'brass': 0xE9,
-    'lightGray': 0xEA,
-    'babyBlueEyes': 0xEB,
-    'springBud': 0xEC,
-    'inchworm': 0xED,
-    'mintGreen': 0xEE,
-    'celeste': 0xEF,
-    'red': 0xF0,
-    'folly': 0xF1,
-    'fashionMagenta': 0xF2,
-    'magenta': 0xF3,
-    'orange': 0xF4,
-    'sunsetOrange': 0xF5,
-    'brilliantRose': 0xF6,
-    'shockingPink': 0xF7,
-    'chromeYellow': 0xF8,
-    'rajah': 0xF9,
-    'melon': 0xFA,
-    'richBrilliantLavender': 0xFB,
-    'yellow': 0xFC,
-    'icterine': 0xFD,
-    'pastelYellow': 0xFE,
-    'white': 0xFF
+var hexColorMap = {
+  '#000000': 0xC0,
+  '#000055': 0xC1,
+  '#0000AA': 0xC2,
+  '#0000FF': 0xC3,
+  '#005500': 0xC4,
+  '#005555': 0xC5,
+  '#0055AA': 0xC6,
+  '#0055FF': 0xC7,
+  '#00AA00': 0xC8,
+  '#00AA55': 0xC9,
+  '#00AAAA': 0xCA,
+  '#00AAFF': 0xCB,
+  '#00FF00': 0xCC,
+  '#00FF55': 0xCD,
+  '#00FFAA': 0xCE,
+  '#00FFFF': 0xCF,
+  '#550000': 0xD0,
+  '#550055': 0xD1,
+  '#5500AA': 0xD2,
+  '#5500FF': 0xD3,
+  '#555500': 0xD4,
+  '#555555': 0xD5,
+  '#5555AA': 0xD6,
+  '#5555FF': 0xD7,
+  '#55AA00': 0xD8,
+  '#55AA55': 0xD9,
+  '#55AAAA': 0xDA,
+  '#55AAFF': 0xDB,
+  '#55FF00': 0xDC,
+  '#55FF55': 0xDD,
+  '#55FFAA': 0xDE,
+  '#55FFFF': 0xDF,
+  '#AA0000': 0xE0,
+  '#AA0055': 0xE1,
+  '#AA00AA': 0xE2,
+  '#AA00FF': 0xE3,
+  '#AA5500': 0xE4,
+  '#AA5555': 0xE5,
+  '#AA55AA': 0xE6,
+  '#AA55FF': 0xE7,
+  '#AAAA00': 0xE8,
+  '#AAAA55': 0xE9,
+  '#AAAAAA': 0xEA,
+  '#AAAAFF': 0xEB,
+  '#AAFF00': 0xEC,
+  '#AAFF55': 0xED,
+  '#AAFFAA': 0xEE,
+  '#AAFFFF': 0xEF,
+  '#FF0000': 0xF0,
+  '#FF0055': 0xF1,
+  '#FF00AA': 0xF2,
+  '#FF00FF': 0xF3,
+  '#FF5500': 0xF4,
+  '#FF5555': 0xF5,
+  '#FF55AA': 0xF6,
+  '#FF55FF': 0xF7,
+  '#FFAA00': 0xF8,
+  '#FFAA55': 0xF9,
+  '#FFAAAA': 0xFA,
+  '#FFAAFF': 0xFB,
+  '#FFFF00': 0xFC,
+  '#FFFF55': 0xFD,
+  '#FFFFAA': 0xFE,
+  '#FFFFFF': 0xFF,
+};
+
+var namedColorMap = {
+  'clear': 0x00,
+  'black': 0xC0,
+  'oxfordBlue': 0xC1,
+  'dukeBlue': 0xC2,
+  'blue': 0xC3,
+  'darkGreen': 0xC4,
+  'midnightGreen': 0xC5,
+  'cobaltBlue': 0xC6,
+  'blueMoon': 0xC7,
+  'islamicGreen': 0xC8,
+  'jaegerGreen': 0xC9,
+  'tiffanyBlue': 0xCA,
+  'vividCerulean': 0xCB,
+  'green': 0xCC,
+  'malachite': 0xCD,
+  'mediumSpringGreen': 0xCE,
+  'cyan': 0xCF,
+  'bulgarianRose': 0xD0,
+  'imperialPurple': 0xD1,
+  'indigo': 0xD2,
+  'electricUltramarine': 0xD3,
+  'armyGreen': 0xD4,
+  'darkGray': 0xD5,
+  'liberty': 0xD6,
+  'veryLightBlue': 0xD7,
+  'kellyGreen': 0xD8,
+  'mayGreen': 0xD9,
+  'cadetBlue': 0xDA,
+  'pictonBlue': 0xDB,
+  'brightGreen': 0xDC,
+  'screaminGreen': 0xDD,
+  'mediumAquamarine': 0xDE,
+  'electricBlue': 0xDF,
+  'darkCandyAppleRed': 0xE0,
+  'jazzberryJam': 0xE1,
+  'purple': 0xE2,
+  'vividViolet': 0xE3,
+  'windsorTan': 0xE4,
+  'roseVale': 0xE5,
+  'purpureus': 0xE6,
+  'lavenderIndigo': 0xE7,
+  'limerick': 0xE8,
+  'brass': 0xE9,
+  'lightGray': 0xEA,
+  'babyBlueEyes': 0xEB,
+  'springBud': 0xEC,
+  'inchworm': 0xED,
+  'mintGreen': 0xEE,
+  'celeste': 0xEF,
+  'red': 0xF0,
+  'folly': 0xF1,
+  'fashionMagenta': 0xF2,
+  'magenta': 0xF3,
+  'orange': 0xF4,
+  'sunsetOrange': 0xF5,
+  'brilliantRose': 0xF6,
+  'shockingPink': 0xF7,
+  'chromeYellow': 0xF8,
+  'rajah': 0xF9,
+  'melon': 0xFA,
+  'richBrilliantLavender': 0xFB,
+  'yellow': 0xFC,
+  'icterine': 0xFD,
+  'pastelYellow': 0xFE,
+  'white': 0xFF,
+  'clearWhite': 0x3F,
 };
 
 var Color = function(color) {
-  return colorMap[color] ? colorMap[color] : colorMap.clear;
+  if (color.charAt(0) === '#') {
+    // Convert shorthand hex to full length for rounding
+    if (color.length === 4) {
+      var r = color.charAt(1);
+      var g = color.charAt(2);
+      var b = color.charAt(3);
+      color = '#'+r+r+g+g+b+b;
+    }
+    // Ensure upper case
+    color = color.toUpperCase();
+    return hexColorMap[roundColor(color)];
+  }
+  return namedColorMap[color] ? namedColorMap[color] : namedColorMap.clear;
+};
+
+var pebbleColors = ['00', '55', 'AA', 'FF'];
+
+var roundColor = function (color) {
+  var rHex = color.substr(1, 2);
+  var gHex = color.substr(3, 2);
+  var bHex = color.substr(5, 2);
+  var r = findClosestColor(rHex, pebbleColors);
+  var g = findClosestColor(gHex, pebbleColors);
+  var b = findClosestColor(bHex, pebbleColors);
+  return '#'+r+g+b;
+};
+
+var findClosestColor = function(color, colors) {
+  var nearestDist = Infinity;
+  var result = color;
+  colors.forEach(function(col) {
+    var dist = Math.abs(parseInt(color, 16) - parseInt(col, 16));
+    if (dist < nearestDist) {
+      nearestDist = dist;
+      result = col;
+    }
+  });
+  return result;
 };
 
 var Font = function(x) {
@@ -324,6 +430,21 @@ var LightTypes = [
 
 var LightType = makeArrayType(LightTypes);
 
+var DictationSessionStatus = [
+  null,
+  'transcriptionRejected',
+  'transcriptionRejectedWithError',
+  'systemAborted',
+  'noSpeechDetected',
+  'connectivityError',
+  'disabled',
+  'internalError',
+  'recognizerError',
+];
+// Custom Dictation Errors:
+DictationSessionStatus[64] = "sessionAlreadyInProgress";
+DictationSessionStatus[65] = "noMicrophone";
+
 var Packet = new struct([
   ['uint16', 'type'],
   ['uint16', 'length'],
@@ -429,6 +550,7 @@ var ImagePacket = new struct([
   ['uint32', 'id'],
   ['int16', 'width'],
   ['int16', 'height'],
+  ['uint16', 'pixelsLength'],
   ['data', 'pixels'],
 ]);
 
@@ -508,7 +630,10 @@ var MenuClearSectionPacket = new struct([
 var MenuPropsPacket = new struct([
   [Packet, 'packet'],
   ['uint16', 'sections', EnumerableType],
-  ['uint8', 'backgroundColor', Color]
+  ['uint8', 'backgroundColor', Color],
+  ['uint8', 'textColor', Color],
+  ['uint8', 'highlightBackgroundColor', Color],
+  ['uint8', 'highlightTextColor', Color],
 ]);
 
 var MenuSectionPacket = new struct([
@@ -655,6 +780,21 @@ var ElementAnimateDonePacket = new struct([
   ['uint32', 'id'],
 ]);
 
+var VoiceDictationStartPacket = new struct([
+  [Packet, 'packet'],
+  ['bool', 'enableConfirmation'],
+]);
+
+var VoiceDictationStopPacket = new struct([
+  [Packet, 'packet'],
+]);
+
+var VoiceDictationDataPacket = new struct([
+  [Packet, 'packet'],
+  ['int8', 'status'],
+  ['cstring', 'transcription'],
+]);
+
 var CommandPackets = [
   Packet,
   SegmentPacket,
@@ -706,6 +846,9 @@ var CommandPackets = [
   ElementImagePacket,
   ElementAnimatePacket,
   ElementAnimateDonePacket,
+  VoiceDictationStartPacket,
+  VoiceDictationStopPacket,
+  VoiceDictationDataPacket,
 ];
 
 var accelAxes = [
@@ -765,11 +908,19 @@ MessageQueue.prototype.stop = function() {
 };
 
 MessageQueue.prototype.consume = function() {
-  this._queue.splice(0, 1);
+  this._queue.shift();
   if (this._queue.length === 0) {
     return this.stop();
   }
   this.cycle();
+};
+
+MessageQueue.prototype.checkSent = function(message, fn) {
+  return function() {
+    if (message === this._sent) {
+      fn();
+    }
+  }.bind(this);
 };
 
 MessageQueue.prototype.cycle = function() {
@@ -780,7 +931,10 @@ MessageQueue.prototype.cycle = function() {
   if (!head) {
     return this.stop();
   }
-  Pebble.sendAppMessage(head, this._consume, this._cycle);
+  this._sent = head;
+  var success = this.checkSent(head, this._consume);
+  var failure = this.checkSent(head, this._cycle);
+  Pebble.sendAppMessage(head, success, failure);
 };
 
 MessageQueue.prototype.send = function(message) {
@@ -938,7 +1092,7 @@ SimplyPebble.cardClear = function(clear) {
 SimplyPebble.cardText = function(field, text, color) {
   CardTextPacket
     .index(field)
-    .color(color || 'black')
+    .color(color || 'clearWhite')
     .text(text || '');
   SimplyPebble.sendPacket(CardTextPacket);
 };
@@ -993,6 +1147,63 @@ SimplyPebble.accelConfig = function(def) {
   SimplyPebble.sendPacket(AccelConfigPacket.prop(def));
 };
 
+SimplyPebble.voiceDictationStart = function(callback, enableConfirmation) {
+  // If there's a transcription in progress
+  if (SimplyPebble.dictationCallback) {
+    // Create the eror event
+    var e = {
+      'err': DictationSessionStatus[64],  // dictationAlreadyInProgress
+      'failed': true,
+      'transcription': null,
+    };
+    
+    // Invoke the callback and return    
+    callback(e);
+    return;
+  }
+
+  // Grab the current window to re-show once we're done
+  state.dictationWindow = WindowStack.top();
+
+  // Set the callback and send the packet
+  state.dictationCallback = callback;
+  SimplyPebble.sendPacket(VoiceDictationStartPacket.enableConfirmation(enableConfirmation));
+}
+
+SimplyPebble.voiceDictationStop = function() {
+  // Send the message
+  SimplyPebble.sendPacket(VoiceDictationStopPacket);
+
+  // Clear the callback variable
+  state.dictationCallback = null;
+
+  // If we have a window stored, show it then clear the varaible
+  if (state.dictationWindow) {
+    state.dictationWindow.show();
+    state.dictationWindow = null;
+  }
+}
+
+SimplyPebble.onVoiceData = function(packet) {
+  if (!state.dictationCallback) {
+    // Something bad happened
+    console.log("No callback specified for dictation session");
+  } else {
+    var e = {
+      'err': DictationSessionStatus[packet.status()], 
+      'failed': packet.status() != 0,
+      'transcription': packet.transcription(),
+    };
+    // invoke and clear the callback
+    state.dictationCallback(e);
+    state.dictationCallback = null;
+  }
+
+  // show the top window to re-register handlers, etc. 
+  state.dictationWindow.show();
+  state.dictationWindow = null;
+}
+
 SimplyPebble.menuClear = function() {
   SimplyPebble.sendPacket(MenuClearPacket);
 };
@@ -1038,7 +1249,7 @@ SimplyPebble.menuSelection = function(section, item, align) {
 };
 
 SimplyPebble.menu = function(def, clear, pushing) {
-  if (arguments.length === 3) {
+  if (typeof pushing === 'boolean') {
     SimplyPebble.windowShow({ type: 'menu', pushing: pushing });
   }
   if (clear !== undefined) {
@@ -1261,11 +1472,15 @@ SimplyPebble.onPacket = function(buffer, offset) {
     case ElementAnimateDonePacket:
       StageElement.emitAnimateDone(packet.id());
       break;
+    case VoiceDictationDataPacket:
+      SimplyPebble.onVoiceData(packet);
+      break;
   }
 };
 
 SimplyPebble.onAppMessage = function(e) {
   var data = e.payload[0];
+  
   Packet._view = toArrayBuffer(data);
 
   var offset = 0;

@@ -9,7 +9,7 @@
  */
 
 // Compatibility definitions for aplite on 2.9
-#if !defined(PBL_PLATFORM_APLITE) && !defined(PBL_PLATFORM_BASALT)
+#if !defined(PBL_PLATFORM_APLITE) && !defined(PBL_PLATFORM_BASALT) && !defined(PBL_PLATFORM_CHALK)
 
 #define PBL_SDK_2
 
@@ -57,6 +57,13 @@ typedef union GColor8 {
 //! Convenience macro to enable use of SDK 3.0 function to compare equality of two colors.
 #define gcolor_equal(a, b) ((a) == (b))
 
+#ifndef graphics_context_set_antialiased
+#define graphics_context_set_antialiased(ctx, enable)
+#endif
+
+#ifndef gbitmap_create_from_png_data
+#define gbitmap_create_from_png_data(png_data, png_data_size) NULL
+#endif
 
 //! Convenience function to use SDK 3.0 function to get a `GBitmap`'s `row_size_bytes` field.
 #ifndef gbitmap_get_bytes_per_row
@@ -103,6 +110,18 @@ typedef union GColor8 {
   (GBitmapFormat1Bit)
 #endif
 
+#ifndef menu_layer_set_normal_colors
+#define menu_layer_set_normal_colors(menu_layer, background_color, text_color)
+#endif
+
+#ifndef menu_layer_set_highlight_colors
+#define menu_layer_set_highlight_colors(menu_layer, background_color, text_color)
+#endif
+
+#ifndef menu_cell_layer_is_highlighted
+#define menu_cell_layer_is_highlighted(cell_layer) (false)
+#endif
+
 //! Convenience macro to use SDK 3.0 function to set a `PropertyAnimation`'s
 //! `values.from.grect` field.
 #ifndef property_animation_set_from_grect
@@ -117,11 +136,16 @@ typedef union GColor8 {
   ((prop_anim)->values.to.grect = *(value_ptr))
 #endif
 
+// Voice API
+typedef struct DictationSession DictationSession;
+typedef struct DictationSessionStatus DictationSessionStatus;
+void dictation_session_start(DictationSession *session);
+
 #endif
 
 // Legacy definitions for basalt on 3.0
 // These should eventually be removed in the future
-#ifdef PBL_PLATFORM_BASALT
+#ifdef PBL_SDK_3
 
 #define window_set_fullscreen(window, fullscreen)
 

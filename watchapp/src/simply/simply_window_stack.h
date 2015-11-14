@@ -6,13 +6,15 @@
 
 #include "simply.h"
 
+#include "util/sdk.h"
+
 #include <pebble.h>
 
 typedef struct SimplyWindowStack SimplyWindowStack;
 
 struct SimplyWindowStack {
   Simply *simply;
-  Window *pusher;
+  IF_SDK_2_ELSE(Window *pusher, NONE);
   bool is_showing:1;
   bool is_hiding:1;
 };

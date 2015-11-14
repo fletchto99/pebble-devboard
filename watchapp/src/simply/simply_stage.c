@@ -244,6 +244,8 @@ static void layer_update_callback(Layer *layer, GContext *ctx) {
   frame.origin.x = -frame.origin.x;
   frame.origin.y = -frame.origin.y;
 
+  graphics_context_set_antialiased(ctx, true);
+
   graphics_context_set_fill_color(ctx, gcolor8_get(self->window.background_color));
   graphics_fill_rect(ctx, frame, 0, GCornerNone);
 
@@ -290,6 +292,9 @@ static SimplyElementCommon *alloc_element(SimplyElementType type) {
     case SimplyElementTypeImage: return malloc0(sizeof(SimplyElementImage));
     case SimplyElementTypeInverter: {
       SimplyElementInverter *element = malloc0(sizeof(SimplyElementInverter));
+      if (!element) {
+        return NULL;
+      }
       element->inverter_layer = inverter_layer_create(GRect(0, 0, 0, 0));
       return &element->common;
     }
@@ -306,9 +311,10 @@ SimplyElementCommon *simply_stage_auto_element(SimplyStage *self, uint32_t id, S
   if (element) {
     return element;
   }
-  element = alloc_element(type);
-  if (!element) {
-    return NULL;
+  while (!(element = alloc_element(type))) {
+    if (!simply_res_evict_image(self->window.simply->res)) {
+      return NULL;
+    }
   }
   element->id = id;
   element->type = type;
@@ -338,6 +344,7 @@ SimplyElementCommon *simply_stage_remove_element(SimplyStage *self, SimplyElemen
 }
 
 void simply_stage_set_element_frame(SimplyStage *self, SimplyElementCommon *element, GRect frame) {
+  grect_standardize(&frame);
   element->frame = frame;
   switch (element->type) {
     default: break;
@@ -435,7 +442,6 @@ static void window_load(Window *window) {
   *(void**) layer_get_data(layer) = self;
   layer_set_update_proc(layer, layer_update_callback);
   scroll_layer_add_child(self->window.scroll_layer, layer);
-  scroll_layer_set_click_config_onto_window(self->window.scroll_layer, window);
 }
 
 static void window_appear(Window *window) {
@@ -584,7 +590,12 @@ static void handle_element_animate_packet(Simply *simply, Packet *data) {
   if (!element) {
     return;
   }
-  SimplyAnimation *animation = malloc0(sizeof(*animation));
+  SimplyAnimation *animation = NULL;
+  while (!(animation = malloc0(sizeof(*animation)))) {
+    if (!simply_res_evict_image(simply->res)) {
+      return;
+    }
+  }
   animation->duration = packet->duration;
   animation->curve = packet->curve;
   simply_stage_animate_element(simply->stage, element, animation, packet->frame);
@@ -627,16 +638,16 @@ SimplyStage *simply_stage_create(Simply *simply) {
   SimplyStage *self = malloc(sizeof(*self));
   *self = (SimplyStage) { .window.simply = simply };
 
-  simply_window_init(&self->window, simply);
-  simply_window_set_background_color(&self->window, GColor8Black);
-
-  window_set_user_data(self->window.window, self);
-  window_set_window_handlers(self->window.window, (WindowHandlers) {
+  static const WindowHandlers s_window_handlers = {
     .load = window_load,
     .appear = window_appear,
     .disappear = window_disappear,
     .unload = window_unload,
-  });
+  };
+  self->window.window_handlers = &s_window_handlers;
+
+  simply_window_init(&self->window, simply);
+  simply_window_set_background_color(&self->window, GColor8Black);
 
   return self;
 }
