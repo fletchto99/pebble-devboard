@@ -27,37 +27,58 @@ functions.setup = function () {
                 if (data.projects.length > 0) {
                     loading.hide();
                     data = data.projects;
-                    var menuItems = [data.length];
+                    var publishedMenuItems = [];
+                    var incompleteMenuItems = [];
                     for (var i = 0; i < data.length; i++) {
-                        menuItems[i] = {
-                            title: data[i].title,
-                            subtitle: "Version: " + data[i].version,
-                            update_date: data[i].update_date,
-                            aplite: data[i].aplite,
-                            basalt: data[i].basalt,
-                            chalk: data[i].chalk,
-                            ios: data[i].ios,
-                            android: data[i].android,
-                            timeline: data[i].timeline,
-                            hearts: data[i].hearts,
-                            installs: data[i].installs
-                        };
+                        if (data[i].version) {
+                            publishedMenuItems.push({
+                                title: data[i].title,
+                                subtitle: "Version: " + data[i].version,
+                                update_date: data[i].update_date,
+                                aplite: data[i].aplite,
+                                basalt: data[i].basalt,
+                                chalk: data[i].chalk,
+                                ios: data[i].ios,
+                                android: data[i].android,
+                                timeline: data[i].timeline,
+                                hearts: data[i].hearts,
+                                installs: data[i].installs
+                            });
+                        } else {
+                            incompleteMenuItems.push({
+                                title: data[i].title,
+                                subtitle: "Version: " + data[i].version,
+                                update_date: data[i].update_date,
+                                aplite: data[i].aplite,
+                                basalt: data[i].basalt,
+                                chalk: data[i].chalk,
+                                ios: data[i].ios,
+                                android: data[i].android,
+                                timeline: data[i].timeline,
+                                hearts: data[i].hearts,
+                                installs: data[i].installs
+                            });
+                        }
+
+
                     }
                     var menu = new UI.Menu({
                         sections: [{
-                            title: 'Projects - ' + menuItems.length, items: menuItems
+                            title: 'Published - ' + publishedMenuItems.length, items: publishedMenuItems
+                        },{
+                            title: 'Incomplete - ' + incompleteMenuItems.length, items: incompleteMenuItems
                         }]
                     });
 
                     menu.on('select', function (event) {
-                        functions.showCard(menuItems[event.itemIndex].title, menuItems[event.itemIndex].subtitle,'Installs: ' + menuItems[event.itemIndex].installs + '\nHearts: ' + menuItems[event.itemIndex].hearts + '\nLast Updated:\n' + menuItems[event.itemIndex].update_date + '\nAplite: ' + menuItems[event.itemIndex].aplite + '\nBasalt: ' + menuItems[event.itemIndex].basalt + '\nChalk: ' + menuItems[event.itemIndex].chalk + '\nAndroid: ' + menuItems[event.itemIndex].android + '\niOS: ' + menuItems[event.itemIndex].ios + '\nTimeline: ' + menuItems[event.itemIndex].timeline);
+                        functions.showCard(event.item.title, event.item.subtitle,'Installs: ' + event.item.installs + '\nHearts: ' + event.item.hearts + '\nLast Updated:\n' + event.item.update_date + '\nAplite: ' + event.item.aplite + '\nBasalt: ' + event.item.basalt + '\nChalk: ' + event.item.chalk + '\nAndroid: ' + event.item.android + '\niOS: ' + event.item.ios + '\nTimeline: ' + event.item.timeline);
                     });
                     menu.show();
                 } else {
                     functions.showAndRemoveCard('Error', 'You do not have any projects published!', '', loading);
                 }
             }
-        }, function (error) {
+        }, function () {
             functions.showAndRemoveCard('Error', 'Error contacting server.', '', loading);
         });
     }
