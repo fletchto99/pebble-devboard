@@ -1,19 +1,22 @@
 //Imports
 var Settings = require('settings');
 var functions = require('functions');
+var config = require('Config.json');
 
-var username = (Settings.data('username') ? 'username=' + encodeURIComponent(Settings.data('username')) : '');
+var card = null;
 
-
-Settings.config({url: functions.getSettingsURL() + username}, function (e) {
+Settings.config({url: config.SETTINGS_URL}, function (e) {
         if (!e.response) {
             console.log("No response from server?");
-            return;
         }
-        var data = JSON.parse(decodeURIComponent(e.response));
-        Settings.data('username', data.username);
-        Settings.data('password', data.password);
+        if (card != null) {
+            var temp = functions.init();
+            card.hide();
+            card = temp;
+        }
     });
 
 //Setup the app
-functions.setup();
+setTimeout(function() {
+    card = functions.init();
+}, 800);

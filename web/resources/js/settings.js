@@ -1,13 +1,13 @@
-function getQueryParam(variable, defaultValue) {
-    var query = location.search.substring(1);
-    var vars = query.split('&');
-    for (var i = 0; i < vars.length; i++) {
-        var pair = vars[i].split('=');
-        if (pair[0] === variable) {
-            return decodeURIComponent(pair[1]);
+function getQueryParam(variable, def) {
+    var result = def;
+    try {
+        var obj = JSON.parse(decodeURIComponent(window.location.hash.substr(1)));
+        if (variable in obj) {
+            result = obj[variable];
         }
+    } catch(ignored) {
     }
-    return defaultValue || '';
+    return result;
 }
 
 $(function () {
@@ -16,6 +16,8 @@ $(function () {
     var password = document.getElementById('password');
     var savebutton = document.getElementById('savebutton');
     var donatebutton = document.getElementById('donatebutton');
+
+    username.value = getQueryParam('username', '');
 
     donatebutton.addEventListener('click', function () {
         savebutton.value = 'Loading PayPal...';
@@ -45,21 +47,20 @@ $(function () {
             success: function (data) {
                 if (data.status == 0) {
                     document.location = getQueryParam('return_to', 'pebblejs://close#') + encodeURIComponent(JSON.stringify({
-                            'username': username.value,
-                            'password': password.value
-                    }));
+                                                                                                                               'username': username.value,
+                                                                                                                               'password': password.value
+                                                                                                                           }));
                 } else {
                     savebutton.value = 'Save';
                     savebutton.disabled = false;
                     alert(data.message);
                 }
             },
-            error: function (data) {
+            error: function () {
                 savebutton.value = 'Save';
                 savebutton.disabled = false;
                 alert('An unknown error has occurred. Please close the settings and try again.');
             }
         });
     });
-
 });
