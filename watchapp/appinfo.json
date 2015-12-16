@@ -6,29 +6,28 @@
   ],
   "companyName": "fletch_to_99",
   "longName": "Devboard",
-  "projectType": "native",
   "resources": {
     "media": [
       {
+        "file": "images/menu_icon.png",
         "menuIcon": true,
-        "type": "png",
         "name": "IMAGE_MENU_ICON",
-        "file": "images/menu_icon.png"
+        "type": "bitmap"
       },
       {
-        "type": "png",
+        "file": "images/logo_splash.png",
         "name": "IMAGE_LOGO_SPLASH",
-        "file": "images/logo_splash.png"
+        "type": "bitmap"
       },
       {
-        "type": "png",
+        "file": "images/tile_splash.png",
         "name": "IMAGE_TILE_SPLASH",
-        "file": "images/tile_splash.png"
+        "type": "bitmap"
       },
       {
-        "type": "font",
+        "file": "fonts/UbuntuMono-Regular.ttf",
         "name": "MONO_FONT_14",
-        "file": "fonts/UbuntuMono-Regular.ttf"
+        "type": "font"
       }
     ]
   },
@@ -39,8 +38,7 @@
     "basalt"
   ],
   "uuid": "fb071b17-7689-4909-a105-8b86a1e5d4c2",
-  "versionCode": 2,
-  "versionLabel": "1.06",
+  "versionLabel": "1.07",
   "watchapp": {
     "watchface": false
   }
