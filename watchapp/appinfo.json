@@ -35,10 +35,11 @@
   "shortName": "Devboard",
   "targetPlatforms": [
     "aplite",
-    "basalt"
+    "basalt",
+    "chalk"
   ],
   "uuid": "fb071b17-7689-4909-a105-8b86a1e5d4c2",
-  "versionLabel": "1.07",
+  "versionLabel": "1.10",
   "watchapp": {
     "watchface": false
   }
